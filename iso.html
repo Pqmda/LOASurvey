@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>School Survey Management System - ISO</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo">
+        <span class="logo-icon">📊</span>
+        <span class="logo-text">Survey Hub</span>
+      </div>
+      <div class="nav-right">
+        <span class="user-info" id="userInfo">Guest User</span>
+        <button class="logout-btn" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="main-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <h3>Your Role</h3>
+        <div class="role-display" id="roleDisplay">Guest</div>
+      </div>
+
+      <div class="sidebar-section iso-only hidden" id="isoSection">
+        <h3>Pending Approvals</h3>
+        <div class="approval-count" id="approvalCount">0</div>
+      </div>
+    </aside>
+
+    <!-- Content Area -->
+    <main class="content">
+      <!-- ISO Secretary View -->
+      <div class="view" id="isoView">
+        <div class="view-header">
+          <h1>Pending Approvals</h1>
+          <div class="filter-tabs">
+            <button class="tab-btn active" data-tab="pending">Pending</button>
+            <button class="tab-btn" data-tab="approved">Approved</button>
+            <button class="tab-btn" data-tab="rejected">Rejected</button>
+          </div>
+        </div>
+
+        <div class="approvals-list" id="approvalsList">
+          <!-- Approval items will be populated here -->
+        </div>
+
+        <div class="empty-state" id="emptyApprovals" style="display: none;">
+          <span class="empty-icon">✓</span>
+          <p>No pending approvals at this time.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal for Approval Details -->
+  <div class="modal hidden" id="approvalModal">
+    <div class="modal-overlay" id="approvalOverlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Review Change Request</h2>
+        <button class="close-btn" id="closeApprovalModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="approvalDetails"></div>
+        <div class="form-actions" id="approvalActions">
+          <button class="btn btn-danger" id="rejectBtn">Reject</button>
+          <button class="btn btn-success" id="approveBtn">Approve</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-transition" aria-hidden="true">
+    <div class="curtain top">
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+    </div>
+    <div class="curtain bottom">
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

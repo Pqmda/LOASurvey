@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>School Survey Management System - PFMO</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo">
+        <span class="logo-icon">📊</span>
+        <span class="logo-text">Survey Hub</span>
+      </div>
+      <div class="nav-right">
+        <span class="user-info" id="userInfo">Guest User</span>
+        <button class="logout-btn" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main-container">
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <h3>Your Role</h3>
+        <div class="role-display" id="roleDisplay">Guest</div>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="view" id="pfmoView">
+        <div class="view-header">
+          <h1>Feedback Inbox</h1>
+        </div>
+        <div class="feedback-list" id="feedbackList"></div>
+        <div class="empty-state" id="emptyFeedback" style="display: none;">
+          <span class="empty-icon">💬</span>
+          <p>No feedback yet.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal hidden" id="feedbackResponseModal">
+    <div class="modal-overlay" id="feedbackResponseOverlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Respond to Feedback</h2>
+        <button class="close-btn" id="closeFeedbackResponseModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="feedbackResponseForm" data-feedback-id="">
+          <div class="form-group">
+            <label for="feedbackResponseMessage">Message</label>
+            <textarea id="feedbackResponseMessage" rows="4" placeholder="Write your response" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="feedbackResponseImage">Attach Picture</label>
+            <input type="file" id="feedbackResponseImage" accept="image/*">
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" id="cancelFeedbackResponseBtn">Cancel</button>
+            <button type="submit" class="btn btn-primary">Send Response</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-transition" aria-hidden="true">
+    <div class="curtain top">
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+    </div>
+    <div class="curtain bottom">
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

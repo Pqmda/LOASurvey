@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Survey Hub - Profile</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo">
+        <span class="logo-icon">📊</span>
+        <span class="logo-text">Survey Hub</span>
+      </div>
+      <div class="nav-right">
+        <span class="user-info" id="userInfo">Guest User</span>
+        <button class="logout-btn" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main-container">
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <h3>Your Role</h3>
+        <div class="role-display" id="roleDisplay">Student</div>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="profile-card">
+        <div class="profile-header">
+          <div class="profile-title">Profile Dashboard</div>
+        </div>
+        <form id="profileForm" class="profile-form">
+          <div class="profile-grid">
+            <div class="form-group">
+              <label for="profileName">Full Name</label>
+              <input type="text" id="profileName" disabled>
+            </div>
+            <div class="form-group">
+              <label for="profileEmail">Email</label>
+              <input type="email" id="profileEmail" disabled>
+            </div>
+          </div>
+          <div class="profile-grid">
+            <div class="form-group">
+              <label for="profileGrade">Grade / Year Level</label>
+              <select id="profileGrade">
+                <option value="">Select level</option>
+                <option value="Kindergarten">Kindergarten</option>
+                <option value="Grade 1">Grade 1</option>
+                <option value="Grade 2">Grade 2</option>
+                <option value="Grade 3">Grade 3</option>
+                <option value="Grade 4">Grade 4</option>
+                <option value="Grade 5">Grade 5</option>
+                <option value="Grade 6">Grade 6</option>
+                <option value="Grade 7">Grade 7</option>
+                <option value="Grade 8">Grade 8</option>
+                <option value="Grade 9">Grade 9</option>
+                <option value="Grade 10">Grade 10</option>
+                <option value="Grade 11">Grade 11</option>
+                <option value="Grade 12">Grade 12</option>
+                <option value="1st Year">1st Year</option>
+                <option value="2nd Year">2nd Year</option>
+                <option value="3rd Year">3rd Year</option>
+                <option value="4th Year">4th Year</option>
+                <option value="5th Year">5th Year</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="profileAge">Age</label>
+              <input type="number" id="profileAge" min="3" max="120" placeholder="Enter age">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="profileCourse">Course / Strand</label>
+            <input type="text" id="profileCourse" list="courseList" placeholder="Type course or strand">
+            <datalist id="courseList"></datalist>
+          </div>
+          <div class="profile-actions">
+            <button type="submit" class="btn btn-primary">Save Profile</button>
+          </div>
+          <div class="profile-note" id="profileMessage"></div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <div class="page-transition" aria-hidden="true">
+    <div class="curtain top">
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+    </div>
+    <div class="curtain bottom">
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script type="module" src="js/profile.js"></script>
+</body>
+</html>

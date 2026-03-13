@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>School Survey Management System - Manager</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo">
+        <span class="logo-icon">📊</span>
+        <span class="logo-text">Survey Hub</span>
+      </div>
+      <div class="nav-right">
+        <span class="user-info" id="userInfo">Guest User</span>
+        <button class="logout-btn" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main-container">
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <h3>Your Role</h3>
+        <div class="role-display" id="roleDisplay">Manager</div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Departments</h3>
+        <div class="dept-controls">
+          <input type="text" id="deptSearchInput" class="dept-search" placeholder="Search courses">
+          <select id="deptSortSelect" class="dept-sort">
+            <option value="az">Sort A-Z</option>
+            <option value="za">Sort Z-A</option>
+          </select>
+        </div>
+        <div class="departments-list" id="departmentsList"></div>
+      </div>
+
+      <div class="sidebar-section manager-only hidden" id="managerSection">
+        <h3>Your Department</h3>
+        <div class="current-dept" id="currentDept">None Selected</div>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="view hidden" id="managerView">
+        <div class="view-header">
+          <h1 id="managerDeptTitle">Select a Department</h1>
+          <button class="btn btn-primary" id="createSurveyBtn">+ Create Survey</button>
+        </div>
+
+        <div class="stats-panel" id="managerStats"></div>
+
+        <div class="surveys-grid" id="surveysGrid"></div>
+
+        <div class="empty-state" id="emptySurveys" style="display: none;">
+          <span class="empty-icon">📭</span>
+          <p>No surveys yet. Create one to get started!</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal hidden" id="surveyModal">
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Create Survey</h2>
+        <button class="close-btn" id="closeModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="surveyForm">
+          <div class="form-group">
+            <label for="surveyTitle">Survey Title</label>
+            <input type="text" id="surveyTitle" placeholder="Enter survey title" required>
+          </div>
+
+          <div class="form-group">
+            <label for="surveyDesc">Description</label>
+            <textarea id="surveyDesc" placeholder="Enter survey description" rows="3"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Schedule</label>
+            <div class="schedule-row">
+              <div class="schedule-field">
+                <label for="surveyStartAt">Start</label>
+                <input type="datetime-local" id="surveyStartAt">
+              </div>
+              <div class="schedule-field">
+                <label for="surveyEndAt">End</label>
+                <input type="datetime-local" id="surveyEndAt">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Questions</label>
+            <div id="questionsContainer">
+              <div class="question-item">
+                <input type="text" class="question-input" placeholder="Enter question">
+                <select class="question-type">
+                  <option>Multiple Choice</option>
+                  <option>Text</option>
+                  <option>Rating</option>
+                </select>
+                <button type="button" class="btn-icon remove-question" style="display: none;">🗑️</button>
+              </div>
+            </div>
+            <button type="button" class="btn btn-secondary" id="addQuestionBtn">+ Add Question</button>
+          </div>
+
+          <div class="form-group">
+            <label for="surveyDept">Department</label>
+            <select id="surveyDept" required>
+              <option value="">Select a department</option>
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" id="cancelModalBtn">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Survey</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="approvalModal">
+    <div class="modal-overlay" id="approvalOverlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Review Change Request</h2>
+        <button class="close-btn" id="closeApprovalModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="approvalDetails"></div>
+        <div class="form-actions" id="approvalActions">
+          <button class="btn btn-danger" id="rejectBtn">Reject</button>
+          <button class="btn btn-success" id="approveBtn">Approve</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="statsModal">
+    <div class="modal-overlay" id="statsModalOverlay"></div>
+    <div class="modal-content stats-modal-content">
+      <div class="modal-header">
+        <h2>Survey Statistics</h2>
+        <button class="close-btn" id="closeStatsModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="surveyStatsContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-transition" aria-hidden="true">
+    <div class="curtain top">
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+    </div>
+    <div class="curtain bottom">
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

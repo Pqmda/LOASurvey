@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>School Survey Management System - Admin</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo">
+        <span class="logo-icon">📊</span>
+        <span class="logo-text">Survey Hub</span>
+      </div>
+      <div class="nav-right">
+        <span class="user-info" id="userInfo">Guest User</span>
+        <button class="logout-btn" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="main-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <h3>Your Role</h3>
+        <div class="role-display" id="roleDisplay">Guest</div>
+      </div>
+
+      <div class="sidebar-section admin-only hidden" id="adminSection">
+        <h3>Admin Panel</h3>
+        <button class="btn btn-primary" id="createUserBtn" style="width: 100%; padding: 10px; margin-top: 8px;">+ Create User</button>
+      </div>
+    </aside>
+
+    <!-- Content Area -->
+    <main class="content">
+      <!-- Admin View -->
+      <div class="view" id="adminView">
+        <div class="view-header">
+          <h1>Admin Dashboard</h1>
+        </div>
+        <div class="users-toolbar">
+          <div class="search-group">
+            <input type="text" id="userSearchInput" class="search-input" placeholder="Search by name, email, role, department">
+            <button class="btn btn-secondary" id="userSearchBtn">Search</button>
+            <button class="btn btn-secondary" id="userSearchClearBtn">Clear</button>
+          </div>
+        </div>
+
+        <div class="users-list" id="usersList">
+          
+        </div>
+
+        <div class="empty-state" id="emptyUsers" style="display: none;">
+          <span class="empty-icon">👥</span>
+          <p>No users yet. Create one to get started!</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal for Admin User Creation -->
+  <div class="modal hidden" id="createUserModal">
+    <div class="modal-overlay" id="createUserOverlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Create New User Account</h2>
+        <button class="close-btn" id="closeCreateUserModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="createUserForm">
+          <div class="form-group">
+            <label for="newUserName">Full Name</label>
+            <input type="text" id="newUserName" placeholder="Enter full name" required>
+          </div>
+          <div class="form-group">
+            <label for="newUserEmail">Email</label>
+            <input type="email" id="newUserEmail" placeholder="Enter email address" required>
+          </div>
+          <div class="form-group">
+            <label for="newUserPassword">Password</label>
+            <input type="password" id="newUserPassword" placeholder="Enter password (min 6 characters)" required>
+          </div>
+          <div class="form-group">
+            <label for="newUserRole">Role</label>
+            <div class="dropdown" id="newUserRoleDropdown">
+              <input type="hidden" id="newUserRole" value="admin">
+              <button type="button" class="dropdown-trigger" aria-haspopup="listbox" aria-expanded="false">
+                <span class="dropdown-label">Admin (Full Access + User Management)</span>
+                <span class="dropdown-icon">▾</span>
+              </button>
+              <ul class="dropdown-menu hidden" role="listbox">
+                <li class="dropdown-item" data-value="admin" aria-selected="true">Admin (Full Access + User Management)</li>
+                <li class="dropdown-item" data-value="manager" aria-selected="false">Manager (Department Surveys)</li>
+                <li class="dropdown-item" data-value="iso_secretary" aria-selected="false">ISO Secretary (Approvals)</li>
+                <li class="dropdown-item" data-value="qmr" aria-selected="false">QMR (Feedback Approval)</li>
+                <li class="dropdown-item" data-value="pfmo" aria-selected="false">PFMO (Feedback)</li>
+              </ul>
+            </div>
+          </div>
+          <div class="form-group" id="deptSelectGroup">
+            <label for="newUserDept">Department (for Managers)</label>
+            <div class="dropdown dropdown-searchable" id="newUserDeptDropdown">
+              <input type="hidden" id="newUserDept" value="">
+              <button type="button" class="dropdown-trigger" aria-haspopup="listbox" aria-expanded="false">
+                <span class="dropdown-label">No Department</span>
+                <span class="dropdown-icon">▾</span>
+              </button>
+              <ul class="dropdown-menu hidden" role="listbox">
+                <li class="dropdown-item" data-value="" aria-selected="true">No Department</li>
+              </ul>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" id="cancelCreateUserBtn">Cancel</button>
+            <button type="submit" class="btn btn-primary">Create Account</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-transition" aria-hidden="true">
+    <div class="curtain top">
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+    </div>
+    <div class="curtain bottom">
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

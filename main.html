@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>School Survey Management System</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="logo">
+        <span class="logo-icon">📊</span>
+        <span class="logo-text">Survey Hub</span>
+      </div>
+      <div class="nav-right">
+        <span class="user-info" id="userInfo">Guest User</span>
+        <button class="profile-btn" id="profileBtn" type="button" aria-label="Profile">
+          <span class="profile-icon">👤</span>
+        </button>
+        <button class="notification-btn hidden" id="surveyNotificationBtn" type="button">
+          <span class="notification-icon">🔔</span>
+          <span class="notification-count" id="surveyNotificationCount">0</span>
+        </button>
+        <button class="logout-btn" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="notification-panel" id="surveyNotificationPanel">
+    <div class="notification-header">
+      <span>Notifications</span>
+      <button class="notification-clear" id="clearNotificationBtn" type="button">Clear All</button>
+    </div>
+    <div class="notification-list" id="surveyNotificationList"></div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="main-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <h3>Your Role</h3>
+        <div class="role-display" id="roleDisplay">Guest</div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Departments</h3>
+        <div class="dept-controls">
+          <input type="text" id="deptSearchInput" class="dept-search" placeholder="Search courses">
+          <select id="deptSortSelect" class="dept-sort">
+            <option value="az">Sort A-Z</option>
+            <option value="za">Sort Z-A</option>
+          </select>
+        </div>
+        <div class="departments-list" id="departmentsList"></div>
+      </div>
+
+      <div class="sidebar-section manager-only hidden" id="managerSection">
+        <h3>Your Department</h3>
+        <div class="current-dept" id="currentDept">None Selected</div>
+      </div>
+
+      <div class="sidebar-section iso-only hidden" id="isoSection">
+        <h3>Pending Approvals</h3>
+        <div class="approval-count" id="approvalCount">0</div>
+      </div>
+
+      <div class="sidebar-section admin-only hidden" id="adminSection">
+        <h3>Admin Panel</h3>
+        <button class="btn btn-primary" id="createUserBtn" style="width: 100%; padding: 10px; margin-top: 8px;">+ Create User</button>
+      </div>
+    </aside>
+
+    <!-- Content Area -->
+    <main class="content">
+      <!-- Guest/Unauthenticated View -->
+      <div class="view" id="guestView">
+        <div class="welcome-section">
+          <h1>Welcome to Survey Hub</h1>
+          <p>Please sign in to access the survey management system.</p>
+          <p class="secondary-text">Or continue as a guest to view sample surveys.</p>
+        </div>
+      </div>
+
+      <!-- Respondent/Guest View -->
+      <div class="view hidden" id="respondentView">
+        <div class="view-header">
+          <h1>Available Surveys</h1>
+          <div class="filter-tabs" id="respondentTabs">
+            <button class="tab-btn active" data-tab="surveys">Surveys</button>
+            <button class="tab-btn" data-tab="feedback">Feedback Responses</button>
+          </div>
+          <button class="btn btn-primary" id="openFeedbackBtn">Send Feedback</button>
+        </div>
+        <div id="respondentSurveysSection">
+          <div class="surveys-grid" id="respondentSurveysGrid">
+            <!-- Approved surveys will be listed here -->
+          </div>
+          <div class="empty-state" id="emptyRespondentSurveys" style="display: none;">
+            <span class="empty-icon">📭</span>
+            <p>No available surveys. Browse departments or check back later.</p>
+          </div>
+        </div>
+        <div id="respondentFeedbackSection" class="hidden">
+          <div class="feedback-list" id="feedbackUserList"></div>
+          <div class="empty-state" id="emptyFeedbackUser" style="display: none;">
+            <span class="empty-icon">💬</span>
+            <p>No feedback responses yet.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Manager View -->
+      <div class="view hidden" id="managerView">
+        <div class="view-header">
+          <h1 id="managerDeptTitle">Select a Department</h1>
+          <button class="btn btn-primary" id="createSurveyBtn">+ Create Survey</button>
+        </div>
+
+        <div class="stats-panel" id="managerStats"></div>
+
+        <div class="surveys-grid" id="surveysGrid">
+          <!-- Survey cards will be populated here -->
+        </div>
+
+        <div class="empty-state" id="emptySurveys" style="display: none;">
+          <span class="empty-icon">📭</span>
+          <p>No surveys yet. Create one to get started!</p>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Modal for Survey Creation/Editing -->
+  <div class="modal hidden" id="surveyModal">
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Create Survey</h2>
+        <button class="close-btn" id="closeModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="surveyForm">
+          <div class="form-group">
+            <label for="surveyTitle">Survey Title</label>
+            <input type="text" id="surveyTitle" placeholder="Enter survey title" required>
+          </div>
+
+          <div class="form-group">
+            <label for="surveyDesc">Description</label>
+            <textarea id="surveyDesc" placeholder="Enter survey description" rows="3"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Schedule</label>
+            <div class="schedule-row">
+              <div class="schedule-field">
+                <label for="surveyStartAt">Start</label>
+                <input type="datetime-local" id="surveyStartAt">
+              </div>
+              <div class="schedule-field">
+                <label for="surveyEndAt">End</label>
+                <input type="datetime-local" id="surveyEndAt">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Questions</label>
+            <div id="questionsContainer">
+              <div class="question-item">
+                <input type="text" class="question-input" placeholder="Enter question">
+                <select class="question-type">
+                  <option>Multiple Choice</option>
+                  <option>Text</option>
+                  <option>Rating</option>
+                </select>
+                <button type="button" class="btn-icon remove-question" style="display: none;">🗑️</button>
+              </div>
+            </div>
+            <button type="button" class="btn btn-secondary" id="addQuestionBtn">+ Add Question</button>
+          </div>
+
+          <div class="form-group">
+            <label for="surveyDept">Department</label>
+            <select id="surveyDept" required>
+              <option value="">Select a department</option>
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" id="cancelModalBtn">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Survey</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Approval Details -->
+  <div class="modal hidden" id="approvalModal">
+    <div class="modal-overlay" id="approvalOverlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Review Change Request</h2>
+        <button class="close-btn" id="closeApprovalModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="approvalDetails"></div>
+        <div class="form-actions" id="approvalActions">
+          <button class="btn btn-danger" id="rejectBtn">Reject</button>
+          <button class="btn btn-success" id="approveBtn">Approve</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Admin User Creation -->
+  <div class="modal hidden" id="createUserModal">
+    <div class="modal-overlay" id="createUserOverlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Create New User Account</h2>
+        <button class="close-btn" id="closeCreateUserModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="createUserForm">
+          <div class="form-group">
+            <label for="newUserName">Full Name</label>
+            <input type="text" id="newUserName" placeholder="Enter full name" required>
+          </div>
+          <div class="form-group">
+            <label for="newUserEmail">Email</label>
+            <input type="email" id="newUserEmail" placeholder="Enter email address" required>
+          </div>
+          <div class="form-group">
+            <label for="newUserPassword">Password</label>
+            <input type="password" id="newUserPassword" placeholder="Enter password (min 6 characters)" required>
+          </div>
+          <div class="form-group">
+            <label for="newUserRole">Role</label>
+            <select id="newUserRole" required>
+              <option value="admin">Admin (Full Access + User Management)</option>
+              <option value="manager">Manager (Department Surveys)</option>
+              <option value="iso_secretary">ISO Secretary (Approvals)</option>
+              <option value="qmr">QMR (Feedback Approval)</option>
+              <option value="pfmo">PFMO (Feedback)</option>
+            </select>
+          </div>
+          <div class="form-group" id="deptSelectGroup">
+            <label for="newUserDept">Department (for Managers)</label>
+            <select id="newUserDept">
+              <option value="">Select a department</option>
+            </select>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" id="cancelCreateUserBtn">Cancel</button>
+            <button type="submit" class="btn btn-primary">Create Account</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="feedbackModal">
+    <div class="modal-overlay" id="feedbackOverlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Send Feedback</h2>
+        <button class="close-btn" id="closeFeedbackModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="feedbackForm">
+          <div class="form-group">
+            <label for="feedbackMessage">Message</label>
+            <textarea id="feedbackMessage" rows="4" placeholder="Share your feedback" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="feedbackImage">Attach Picture</label>
+            <input type="file" id="feedbackImage" accept="image/*">
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" id="cancelFeedbackBtn">Cancel</button>
+            <button type="submit" class="btn btn-primary">Send</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-transition" aria-hidden="true">
+    <div class="curtain top">
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+    </div>
+    <div class="curtain bottom">
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

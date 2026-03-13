@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Satisfaction Survey</title>
+  <link rel="stylesheet" href="css/login.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <!-- Preloader counter moved into curtain overlay -->
+
+  <div class = "loa-title">
+    <h2>LYCEUM OF ALABANG</h2>
+  </div>
+
+  <div class = "loa-logo">
+    <img src="IMAGES/loalogo.png">
+  </div>
+
+  <div class="auth-container">
+    <div class="auth-left">
+      <h1>Customer Satisfaction Survey</h1>
+      <p>Sign in to your account to manage and respond to surveys.</p>
+      <ul>
+        <li>Secure Firebase authentication</li>
+        <li>Admin-managed user creation</li>
+        <li>Role-based access control</li>
+      </ul>
+    </div>
+
+    <div class="auth-right">
+      <div class="auth-tabs">
+        <button id="tab-login" class="active">Sign In</button>
+        <button id="tab-register">Create Account</button>
+      </div>
+
+      <form id="login-form" class="auth-form">
+        <h2>Sign In</h2>
+        <input id="login-email" type="email" placeholder="Email" required>
+        <input id="login-password" type="password" placeholder="Password" required>
+        <button type="submit">Sign In</button>
+      </form>
+
+      <form id="register-form" class="auth-form hidden">
+        <h2>Create Account</h2>
+        <input id="register-name" type="text" placeholder="Full Name" required>
+        <input id="register-email" type="email" placeholder="Email" required>
+        <input id="register-password" type="password" placeholder="Password (min 6 characters)" required>
+        <div class="role-dropdown" id="registerRoleDropdown" data-value="student">
+          <button type="button" class="dropdown-trigger" aria-haspopup="listbox" aria-expanded="false">
+            <span class="dropdown-label">Student</span>
+            <span class="dropdown-caret">▾</span>
+          </button>
+          <ul class="dropdown-menu hidden" role="listbox" tabindex="-1">
+            <li class="dropdown-item" role="option" data-value="student" aria-selected="true">Student</li>
+            <li class="dropdown-item" role="option" data-value="parent">Parent</li>
+          </ul>
+        </div>
+        <input id="register-student-id" class="hidden" type="text" placeholder="Student ID">
+        <button type="submit">Create Account</button>
+      </form>
+
+      <button id="guest-btn" class="guest-btn">Continue as Guest</button>
+      <div id="auth-message" class="auth-message" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <div class="page-transition" aria-hidden="true">
+    <div class="curtain top">
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+    </div>
+    <div class="curtain bottom">
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+      <div class="curtain-block"></div>
+    </div>
+    <div class="preloader-counter">0%</div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="js/auth/login.js"></script>
+</body>
+</html>
