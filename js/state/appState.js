@@ -7,6 +7,7 @@ export const state = {
   surveys: [],
   approvals: [],
   users: [],
+  departments: [],
   responses: [],
   feedbackThreads: [],
   feedbackUserThreads: [],
@@ -19,7 +20,8 @@ export const state = {
   notificationsUnsub: null,
   approvalsUnsub: null,
   usersUnsub: null,
-  responsesUnsub: null
+  responsesUnsub: null,
+  departmentsUnsub: null
 };
 
 export function getNormalizedRole(role) {

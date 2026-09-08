@@ -34,6 +34,15 @@
       <div class="sidebar-section admin-only hidden" id="adminSection">
         <h3>Admin Panel</h3>
         <button class="btn btn-primary" id="createUserBtn" style="width: 100%; padding: 10px; margin-top: 8px;">+ Create User</button>
+        <div class="admin-divider"></div>
+        <div class="sidebar-subtitle">Add Department</div>
+        <form id="addDeptForm" class="admin-dept-form">
+          <input type="text" id="deptGroupInput" class="dept-search" placeholder="Group (e.g., College of Education)" required>
+          <input type="text" id="deptCodeInput" class="dept-search" placeholder="Code (e.g., BSIT)" required>
+          <input type="text" id="deptShortInput" class="dept-search" placeholder="Short label (e.g., BSIT)" required>
+          <input type="text" id="deptNameInput" class="dept-search" placeholder="Full name" required>
+          <button type="submit" class="btn btn-secondary" id="addDeptBtn" style="width: 100%; padding: 10px;">+ Add Department</button>
+        </form>
       </div>
     </aside>
 

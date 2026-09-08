@@ -1,5 +1,5 @@
 // ==================== EVENT HANDLERS ====================
-import { auth } from '../config/firebase.js';
+import { auth, db } from '../config/firebase.js';
 import { state } from '../state/appState.js';
 import { navigateWithCurtain } from '../animations/curtain.js';
 import { animateGrid, animateApprovals } from '../animations/transitions.js';
@@ -23,7 +23,7 @@ import { renderApprovals, closeApprovalModal } from '../services/approvals.js';
 import { createUser, renderUsers, initAdminDropdowns } from '../services/users.js';
 import { submitFeedback, submitFeedbackResponse, subscribeUserFeedbackThreads, reviewFeedbackByQMR } from '../services/feedback.js';
 
-const departmentCatalog = (() => {
+const baseDepartmentCatalog = (() => {
   const groups = [
     {
       group: 'Complete Elementary Program',
@@ -124,6 +124,44 @@ const departmentCatalog = (() => {
   }, {});
   return { groups, flat, map };
 })();
+
+const getDepartmentCodeKey = (code) => String(code || '').trim().toLowerCase();
+
+const buildDepartmentCatalog = (extras = []) => {
+  const groups = baseDepartmentCatalog.groups.map(group => ({
+    group: group.group,
+    items: group.items.map(item => ({ ...item }))
+  }));
+  const codeKeys = new Set();
+  groups.forEach(group => group.items.forEach(item => codeKeys.add(getDepartmentCodeKey(item.code))));
+
+  extras.forEach((item) => {
+    if (!item) return;
+    const code = String(item.code || '').trim();
+    if (!code) return;
+    const key = getDepartmentCodeKey(code);
+    if (!key || codeKeys.has(key)) return;
+    const short = String(item.short || item.label || code).trim();
+    const name = String(item.name || short || code).trim();
+    const groupName = String(item.group || 'Other Departments').trim() || 'Other Departments';
+    let group = groups.find(g => g.group === groupName);
+    if (!group) {
+      group = { group: groupName, items: [] };
+      groups.push(group);
+    }
+    group.items.push({ code, short: short || code, name: name || short || code });
+    codeKeys.add(key);
+  });
+
+  const flat = groups.flatMap((group) => group.items.map(item => ({ ...item, group: group.group })));
+  const map = flat.reduce((acc, item) => {
+    acc[item.code] = { label: item.short, full: item.name, group: item.group };
+    return acc;
+  }, {});
+  return { groups, flat, map };
+};
+
+let departmentCatalog = buildDepartmentCatalog();
 
 const renderDepartmentSidebar = () => {
   const list = document.getElementById('departmentsList');
@@ -234,6 +272,60 @@ const populateAdminDeptDropdown = () => {
   if (!selected) hidden.value = '';
 };
 
+const updateDepartmentCatalog = () => {
+  departmentCatalog = buildDepartmentCatalog(state.departments || []);
+  window.departmentCatalog = departmentCatalog;
+  window.departmentDefault = departmentCatalog.flat[0]?.code || '';
+  renderDepartmentSidebar();
+  populateDeptSelects();
+  populateAdminDeptDropdown();
+  initAdminDropdowns();
+  renderUsers();
+  syncActiveDeptButton();
+};
+
+const subscribeDepartments = () => {
+  if (state.departmentsUnsub) state.departmentsUnsub();
+  try {
+    state.departmentsUnsub = db.collection('departments')
+      .onSnapshot((snap) => {
+        state.departments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        updateDepartmentCatalog();
+      }, (err) => {
+        console.error('Departments snapshot error:', err);
+        state.departments = [];
+        updateDepartmentCatalog();
+      });
+  } catch (e) {
+    console.error('subscribeDepartments error:', e);
+  }
+};
+
+const addDepartment = async ({ group, code, short, name }) => {
+  if (!state.currentUser || state.userRole !== 'admin') {
+    throw new Error('Only admins can add departments.');
+  }
+  const cleanCode = String(code || '').trim().toUpperCase();
+  const cleanGroup = String(group || '').trim();
+  const cleanShort = String(short || cleanCode).trim();
+  const cleanName = String(name || cleanShort || cleanCode).trim();
+  if (!cleanCode || !cleanGroup || !cleanShort || !cleanName) {
+    throw new Error('All department fields are required.');
+  }
+  const key = getDepartmentCodeKey(cleanCode);
+  if (departmentCatalog.flat.some(item => getDepartmentCodeKey(item.code) === key)) {
+    throw new Error(`Department code "${cleanCode}" already exists.`);
+  }
+  await db.collection('departments').add({
+    group: cleanGroup,
+    code: cleanCode,
+    short: cleanShort,
+    name: cleanName,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    createdBy: state.currentUser?.email || state.currentUser?.uid || 'admin'
+  });
+};
+
 const syncActiveDeptButton = () => {
   const activeDept = state.selectedDept;
   if (!activeDept) return;
@@ -300,13 +392,8 @@ export function setupEventListeners() {
     }
   });
 
-  window.departmentCatalog = departmentCatalog;
-  window.departmentDefault = departmentCatalog.flat[0]?.code || '';
-  renderDepartmentSidebar();
-  populateDeptSelects();
-  populateAdminDeptDropdown();
-  initAdminDropdowns();
-  syncActiveDeptButton();
+  updateDepartmentCatalog();
+  subscribeDepartments();
 
   const deptSearchInput = document.getElementById('deptSearchInput');
   if (deptSearchInput) {
@@ -711,6 +798,26 @@ export function setupEventListeners() {
       if (modal) modal.classList.add('hidden');
       const form = document.getElementById('createUserForm');
       if (form) form.reset();
+    });
+  }
+
+  // Admin - Add Department Form
+  const addDeptForm = document.getElementById('addDeptForm');
+  if (addDeptForm) {
+    addDeptForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const group = document.getElementById('deptGroupInput')?.value || '';
+      const code = document.getElementById('deptCodeInput')?.value || '';
+      const short = document.getElementById('deptShortInput')?.value || '';
+      const name = document.getElementById('deptNameInput')?.value || '';
+      try {
+        await addDepartment({ group, code, short, name });
+        showNotification('Department added', 'success');
+        addDeptForm.reset();
+      } catch (error) {
+        console.error('addDepartment error:', error);
+        showNotification('Error adding department: ' + (error.message || error), 'error');
+      }
     });
   }
 

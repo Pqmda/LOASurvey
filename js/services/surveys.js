@@ -848,6 +848,235 @@ const buildSurveyStatsHtml = (survey, responses) => {
   return { html, charts };
 };
 
+const addWrappedPdfText = (doc, text, x, y, maxWidth, lineHeight = 6) => {
+  const lines = doc.splitTextToSize(String(text || ''), maxWidth);
+  lines.forEach((line) => {
+    doc.text(line, x, y.value);
+    y.value += lineHeight;
+  });
+};
+
+const ensurePdfPageSpace = (doc, y, needed = 10) => {
+  const pageHeight = doc.internal.pageSize.getHeight();
+  if (y.value + needed > pageHeight - 12) {
+    doc.addPage();
+    y.value = 16;
+  }
+};
+
+const downloadSurveyStatsPdf = (surveyId) => {
+  if (!surveyId) return;
+  
+  const survey = state.surveys.find(s => s.id === surveyId);
+  const responses = (state.responses || []).filter(r => r.surveyId === surveyId);
+  
+  if (!survey) {
+    showNotification('Survey not found', 'error');
+    return;
+  }
+  
+  // Try jsPDF first if available
+  if (window.jspdf && window.jspdf.jsPDF) {
+    try {
+      generatePdfWithJsPDF(survey, responses);
+      return;
+    } catch (error) {
+      console.warn('jsPDF failed, falling back to CSV:', error);
+    }
+  }
+  
+  // Fallback to CSV export (more reliable)
+  generateCsvExport(survey, responses);
+};
+
+// Generate PDF using jsPDF (if available)
+const generatePdfWithJsPDF = (survey, responses) => {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  
+  // Add title
+  doc.setFontSize(20);
+  doc.text(`Survey: ${survey.title}`, 20, 20);
+  
+  // Add metadata
+  doc.setFontSize(12);
+  doc.text(`Department: ${getDeptLabel(survey.department)}`, 20, 35);
+  doc.text(`Total Responses: ${responses.length}`, 20, 45);
+  doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 55);
+  
+  let y = 70;
+  
+  // Add questions and statistics
+  (survey.questions || []).forEach((question, idx) => {
+    if (y > 250) {
+      doc.addPage();
+      y = 20;
+    }
+    
+    doc.setFontSize(14);
+    doc.text(`${idx + 1}. ${question.question}`, 20, y);
+    y += 10;
+    
+    doc.setFontSize(12);
+    doc.text(`Type: ${question.type}`, 20, y);
+    y += 10;
+    
+    // Add response data
+    const key = `answer_${idx}`;
+    const answerValues = responses.map(r => r.answers?.[key]).filter(v => v !== undefined && v !== null);
+    
+    if (answerValues.length > 0) {
+      if (question.type === 'Multiple Choice') {
+        const counts = { Yes: 0, No: 0, Maybe: 0 };
+        answerValues.forEach(v => counts[v] = (counts[v] || 0) + 1);
+        
+        Object.entries(counts).forEach(([option, count]) => {
+          if (y > 280) {
+            doc.addPage();
+            y = 20;
+          }
+          doc.text(`  ${option}: ${count} (${Math.round((count / answerValues.length) * 100)}%)`, 25, y);
+          y += 7;
+        });
+      } else if (question.type === 'Rating') {
+        const counts = { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 };
+        answerValues.forEach(v => counts[String(v)] = (counts[String(v)] || 0) + 1);
+        
+        Object.entries(counts).forEach(([rating, count]) => {
+          if (y > 280) {
+            doc.addPage();
+            y = 20;
+          }
+          const stars = '⭐'.repeat(parseInt(rating));
+          doc.text(`  ${stars}: ${count} (${Math.round((count / answerValues.length) * 100)}%)`, 25, y);
+          y += 7;
+        });
+      } else {
+        // Text responses - show top 5
+        const freq = {};
+        answerValues.forEach(v => {
+          const trimmed = String(v).trim();
+          if (trimmed) {
+            const key = trimmed.toLowerCase();
+            freq[key] = (freq[key] || 0) + 1;
+          }
+        });
+        
+        const topEntries = Object.entries(freq)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5);
+        
+        topEntries.forEach(([key, count], i) => {
+          if (y > 280) {
+            doc.addPage();
+            y = 20;
+          }
+          doc.text(`  ${i + 1}. ${key}: ${count}`, 25, y);
+          y += 7;
+        });
+      }
+    } else {
+      doc.text('No responses yet', 25, y);
+      y += 7;
+    }
+    
+    y += 10; // Space between questions
+  });
+  
+  // Save the PDF
+  doc.save(`survey-stats-${survey.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.pdf`);
+};
+
+// Generate CSV export (more reliable on Infinity Free)
+const generateCsvExport = (survey, responses) => {
+  try {
+    const csvRows = [];
+    
+    // Header row
+    const headers = ['Question', 'Type', 'Responses', 'Statistics'];
+    csvRows.push(headers.join(','));
+    
+    // Data rows
+    (survey.questions || []).forEach((question, idx) => {
+      const key = `answer_${idx}`;
+      const answerValues = responses.map(r => r.answers?.[key]).filter(v => v !== undefined && v !== null);
+      
+      let stats = '';
+      if (answerValues.length > 0) {
+        if (question.type === 'Multiple Choice') {
+          const counts = { Yes: 0, No: 0, Maybe: 0 };
+          answerValues.forEach(v => counts[v] = (counts[v] || 0) + 1);
+          stats = Object.entries(counts)
+            .map(([option, count]) => `${option}: ${count} (${Math.round((count / answerValues.length) * 100)}%)`)
+            .join('; ');
+        } else if (question.type === 'Rating') {
+          const counts = { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 };
+          answerValues.forEach(v => counts[String(v)] = (counts[String(v)] || 0) + 1);
+          stats = Object.entries(counts)
+            .map(([rating, count]) => `${'⭐'.repeat(parseInt(rating))}: ${count} (${Math.round((count / answerValues.length) * 100)}%)`)
+            .join('; ');
+        } else {
+          // Text responses - show top 5
+          const freq = {};
+          answerValues.forEach(v => {
+            const trimmed = String(v).trim();
+            if (trimmed) {
+              const key = trimmed.toLowerCase();
+              freq[key] = (freq[key] || 0) + 1;
+            }
+          });
+          
+          const topEntries = Object.entries(freq)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5);
+          
+          stats = topEntries
+            .map(([key, count], i) => `${i + 1}. ${key}: ${count}`)
+            .join('; ');
+        }
+      } else {
+        stats = 'No responses yet';
+      }
+      
+      const row = [
+        `"${question.question.replace(/"/g, '""')}"`,
+        question.type,
+        answerValues.length,
+        `"${stats.replace(/"/g, '""')}"`
+      ];
+      csvRows.push(row.join(','));
+    });
+    
+    // Create CSV content
+    const csvContent = csvRows.join('\n');
+    
+    // Create download link
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `survey-stats-${survey.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.csv`;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    showNotification('CSV file downloaded successfully', 'success');
+    
+  } catch (error) {
+    console.error('CSV export failed:', error);
+    showNotification('Export failed. Using print fallback.', 'error');
+    
+    // Ultimate fallback: print
+    document.body.classList.add('printing-stats');
+    window.print();
+    setTimeout(() => {
+      document.body.classList.remove('printing-stats');
+    }, 300);
+  }
+};
+
 export function openSurveyStatsModal(surveyId) {
   const survey = state.surveys.find(s => s.id === surveyId);
   const modal = document.getElementById('statsModal');
@@ -856,6 +1085,11 @@ export function openSurveyStatsModal(surveyId) {
   const responses = (state.responses || []).filter(r => r.surveyId === surveyId);
   const result = buildSurveyStatsHtml(survey, responses);
   content.innerHTML = result.html;
+  const downloadBtn = document.getElementById('downloadStatsPdfBtn');
+  if (downloadBtn) {
+    downloadBtn.onclick = () => downloadSurveyStatsPdf(surveyId);
+    downloadBtn.disabled = false;
+  }
   destroyStatsCharts();
   if (!window.Chart) {
     showNotification('Chart.js failed to load. Check the CDN script.', 'error');
@@ -953,3 +1187,4 @@ if (typeof window !== 'undefined') {
   window.openAnswerSurveyModal = openAnswerSurveyModal;
   window.openSurveyStatsModal = openSurveyStatsModal;
 }
+

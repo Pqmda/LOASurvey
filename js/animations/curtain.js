@@ -48,8 +48,21 @@ export function animateTransition() {
   });
 }
 
+function resolveAppUrl(url) {
+  if (!url) return url;
+  if (/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(url) || url.startsWith('//')) {
+    return url;
+  }
+  if (url.startsWith('/')) {
+    const currentPath = window.location.pathname || '/';
+    const basePath = currentPath.replace(/\/[^/]*$/, '');
+    return `${basePath}${url}`;
+  }
+  return url;
+}
+
 export function navigateWithCurtain(url) {
   animateTransition().then(() => {
-    window.location.href = url;
+    window.location.href = resolveAppUrl(url);
   });
 }

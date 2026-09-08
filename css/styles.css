@@ -120,6 +120,26 @@ body {
   font-weight: 700;
 }
 
+.sidebar-subtitle {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #162f68;
+  letter-spacing: 0.8px;
+  margin-bottom: 0.6rem;
+  font-weight: 700;
+}
+
+.admin-divider {
+  height: 1px;
+  background: rgba(22, 47, 104, 0.2);
+  margin: 1rem 0;
+}
+
+.admin-dept-form {
+  display: grid;
+  gap: 0.65rem;
+}
+
 .role-display {
   background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
   border: 1px solid rgba(99, 102, 241, 0.3);
@@ -1138,6 +1158,71 @@ body {
   text-align: right;
   color: #a78bfa;
   font-weight: 600;
+}
+
+/* ==================== PRINT STYLES (NATIVE PDF) ==================== */
+@media print {
+  body.printing-stats {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  body.printing-stats .navbar,
+  body.printing-stats .main-container,
+  body.printing-stats .sidebar,
+  body.printing-stats .page-transition,
+  body.printing-stats .modal-overlay,
+  body.printing-stats #downloadStatsPdfBtn,
+  body.printing-stats #closeStatsModal {
+    display: none !important;
+  }
+
+  body.printing-stats .modal {
+    position: relative !important;
+    background: transparent !important;
+    z-index: auto !important;
+    display: block !important;
+    height: auto !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  body.printing-stats .modal-content {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    color: #000000 !important;
+    position: relative !important;
+  }
+
+  body.printing-stats .stats-question-card {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #000000 !important;
+    page-break-inside: avoid !important;
+  }
+
+  body.printing-stats .stats-question-title,
+  body.printing-stats .stats-detail-title {
+    color: #000000 !important;
+  }
+
+  body.printing-stats .stats-detail-meta {
+    color: #475569 !important;
+  }
+
+  body.printing-stats .legend-item {
+    color: #1e293b !important;
+  }
+
+  body.printing-stats .text-stat {
+    color: #1e293b !important;
+  }
 }
 
 .stats-empty {
