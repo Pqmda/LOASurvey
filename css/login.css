@@ -1,35 +1,88 @@
 @import url('https://fonts.cdnfonts.com/css/satoshi');
 
+:root {
+  --navy-900: #0e2049;
+  --navy-800: #162f68;
+  --navy-700: #1e3d84;
+  --navy-100: #eaeefb;
+  --gold-500: #f7ba31;
+  --gold-600: #dd9f16;
+
+  --bg: #f4f5f9;
+  --surface: #ffffff;
+  --surface-muted: #f8f9fc;
+  --border: #e3e6ef;
+
+  --text: #16192b;
+  --text-muted: #62677e;
+  --text-faint: #9298ab;
+
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --shadow-md: 0 12px 34px rgba(14, 32, 73, 0.10);
+}
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
+
 html, body {
   width: 100%;
   min-height: 100%;
 }
+
 body {
-  background: linear-gradient(135deg, #162f68 0%, #f7ba31 100%);
-  color: #fff;
+  background: var(--bg);
+  color: var(--text);
   font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background-repeat: no-repeat;
-  background-size: cover;
   min-height: 100vh;
   overflow-x: hidden;
 }
 
+/* ==================== BRAND MARK ==================== */
+.loa-title {
+  position: fixed;
+  top: 2rem;
+  left: 2.5rem;
+  z-index: 5;
+}
+
+.loa-title h2 {
+  font-size: 1.35rem;
+  font-family: 'Satoshi', sans-serif;
+  font-weight: 700;
+  color: var(--navy-800);
+  letter-spacing: -0.01em;
+}
+
+.loa-logo {
+  position: fixed;
+  top: 1.6rem;
+  left: 1.4rem;
+  z-index: 6;
+}
+
+.loa-logo img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+/* ==================== AUTH CONTAINER ==================== */
 .auth-container {
   width: 100%;
-  max-width: 900px;
+  max-width: 920px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 40px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 20px;
-  padding: 50px;
-  box-shadow: 0 20px 60px rgba(255, 255, 255, 0.801);
+  grid-template-columns: 1.05fr 1fr;
+  gap: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
   opacity: 0;
 }
 
@@ -37,108 +90,122 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  padding: 3.25rem 3rem;
+  background: var(--navy-800);
+  color: #fff;
 }
 
 .auth-left h1 {
   font-family: 'Satoshi', sans-serif;
-  font-size: 3.5rem;
-  margin-bottom: 15px;
-  letter-spacing: 2px;
+  font-size: 2.35rem;
+  font-weight: 700;
+  margin-bottom: 14px;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
 }
 
 .auth-left p {
-  opacity: 0.7;
+  opacity: 0.82;
   line-height: 1.6;
-  margin-bottom: 25px;
-  font-size: 1rem;
+  margin-bottom: 22px;
+  font-size: 0.98rem;
 }
 
 .auth-left ul {
   list-style: none;
-  opacity: 0.8;
-  font-size: 0.95rem;
-  line-height: 1.8;
+  opacity: 0.92;
+  font-size: 0.92rem;
+  line-height: 1.9;
 }
 
 .auth-left li {
-  margin-bottom: 8px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
 }
 
 .auth-left li:before {
-  content: "→ ";
-  color: #162f68;
-  margin-right: 8px;
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold-500);
+  flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .auth-right {
   display: flex;
   flex-direction: column;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 16px;
-  padding: 10px 10px 10px 10px;
-  border: 1px solid rgb(255, 255, 255);
+  background: var(--surface);
+  padding: 2.75rem 2.5rem;
 }
 
 .auth-tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 5px;
-  margin-bottom: 20px;
+  gap: 4px;
+  margin-bottom: 24px;
   position: relative;
-  top: 0vh;
-  right: 0vw;
+  background: var(--surface-muted);
+  border-radius: var(--radius-sm);
+  padding: 4px;
 }
 
 .auth-tabs button {
-  padding: 12px;
+  padding: 10px;
   border: none;
-  border-radius: 10px;
+  border-radius: 5px;
   background: transparent;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-muted);
   cursor: pointer;
   font-weight: 600;
-  transition: all 0.3s ease;
-  border-bottom: 2px solid transparent;
+  font-size: 0.88rem;
+  transition: all 0.2s ease;
+  z-index: 1;
 }
 
 .auth-tabs button.active {
-  color: #fff;
-  background: #162f68;
-  border-bottom-color: #f7ba31;
+  color: var(--navy-900);
 }
 
 .auth-form {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
 .auth-form.hidden { display: none; }
+
 .auth-form h2 {
-  font-size: 1.4rem;
-  margin-bottom: 6px;
-  font-weight: 600;
+  font-size: 1.25rem;
+  margin-bottom: 4px;
+  font-weight: 700;
+  color: var(--text);
 }
 
 .auth-form input {
   padding: 12px 14px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.02);
-  color: #fff;
-  font-size: 0.95rem;
-  transition: all 0.2s ease;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-muted);
+  color: var(--text);
+  font-size: 0.92rem;
+  font-family: inherit;
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
 
 .auth-form input:focus {
   outline: none;
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(24, 71, 224, 0.5);
+  background: var(--surface);
+  border-color: var(--navy-700);
+  box-shadow: 0 0 0 3px var(--navy-100);
 }
 
 .auth-form input::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--text-faint);
 }
 
 .hidden { display: none !important; }
@@ -150,26 +217,27 @@ body {
 .dropdown-trigger {
   width: 100%;
   padding: 12px 14px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.02);
-  color: #fff;
-  font-size: 0.95rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-muted);
+  color: var(--text);
+  font-size: 0.92rem;
   font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  transition: all 0.2s ease;
+  transition: border-color 0.15s ease;
   cursor: pointer;
   z-index: 1;
 }
 
 .dropdown-trigger:hover {
-  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--navy-700);
 }
 
 .dropdown-caret {
-  opacity: 0.7;
+  opacity: 0.6;
+  color: var(--text-faint);
 }
 
 .dropdown-menu {
@@ -177,68 +245,76 @@ body {
   top: calc(100% + 6px);
   left: 0;
   right: 0;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   overflow: hidden;
-  backdrop-filter: blur(6px);
+  box-shadow: var(--shadow-md);
   z-index: 9999;
 }
 
 .dropdown-item {
   padding: 10px 14px;
-  color: #fff;
-  font-size: 0.95rem;
+  color: var(--text);
+  font-size: 0.92rem;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: background 0.15s ease;
 }
 
 .dropdown-item:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--surface-muted);
 }
 
 .dropdown-item[aria-selected="true"] {
-  background: rgba(22, 47, 104, 0.5);
+  background: var(--navy-100);
+  color: var(--navy-800);
+  font-weight: 600;
 }
 
 .auth-form select {
   padding: 12px 14px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.02);
-  color: #fff;
-  font-size: 0.95rem;
-  transition: all 0.2s ease;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-muted);
+  color: var(--text);
+  font-size: 0.92rem;
+  transition: border-color 0.15s ease;
 }
 
 .auth-form select:focus {
   outline: none;
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(24, 71, 224, 0.5);
+  background: var(--surface);
+  border-color: var(--navy-700);
 }
 
 .auth-tabs-underline {
   position: absolute;
-  bottom: 0;
-  left: 1vw;
-  width: 40%;
-  height: 2px;
-  background: #f7ba31;
-  border-radius: 2px;
+  bottom: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  height: calc(100% - 8px);
+  background: var(--surface);
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(14, 32, 73, 0.12);
   pointer-events: none;
+  z-index: 0;
 }
 
 .auth-form button[type="submit"] {
   padding: 12px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   border: none;
-  background: #162f68;
-  color: #fff;
-  font-weight: 600;
-  font-size: 0.95rem;
+  background: var(--gold-500);
+  color: var(--navy-900);
+  font-weight: 700;
+  font-size: 0.92rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background 0.15s ease;
   margin-top: 8px;
+}
+
+.auth-form button[type="submit"]:hover {
+  background: var(--gold-600);
 }
 
 /* Page Transition */
@@ -270,63 +346,43 @@ body {
 }
 .curtain-block {
   flex: 1;
-  background: #fff;
-}
-
-.auth-form button[type="submit"]:hover {
-  background: #f7ba31;
-  transform: translateY(-2px);
+  background: var(--navy-800);
 }
 
 .guest-btn {
   padding: 12px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: transparent;
-  color: #fff;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 0.95rem;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  font-size: 0.92rem;
 }
 
 .guest-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: var(--surface-muted);
+  border-color: var(--navy-700);
 }
 
 .auth-message {
-  color: #ffa6a6;
-  font-size: 0.85rem;
+  color: var(--danger, #d1453d);
+  font-size: 0.84rem;
   margin-top: 10px;
   min-height: 18px;
   line-height: 1.4;
 }
 
 .auth-message.success {
-  color: #a6ffa6;
+  color: #1a9c6b;
 }
 
-.loa-title h2{
-  position: absolute;
-  top: 3vh;
-  left: 8vw;
-  font-size: 3.5rem;
-  font-family: 'Satoshi', sans-serif;
-}
-
-.loa-logo img {
-  position: absolute;
-  top: 1vw;
-  left: 3vh;
-  width: 6vw;
-  height: 10vh;
-}
 .preloader {
   position: fixed;
   inset: 0;
   z-index: 2000;
-  background: #080808;
+  background: var(--navy-900);
   display: grid;
   place-items: center;
   overflow: hidden;
@@ -337,7 +393,7 @@ body {
   top: 0;
   bottom: 0;
   width: 50%;
-  background: linear-gradient(135deg, #000000be 0%, #000000 100%);
+  background: var(--navy-900);
 }
 
 .preloader-swipe.left {
@@ -354,16 +410,17 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   font-family: 'Satoshi', sans-serif;
-  font-size: 10rem;
-  letter-spacing: 2px;
-  color: rgb(0, 0, 0);
+  font-size: 6rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #fff;
   opacity: 0;
   pointer-events: none;
   z-index: 3001;
 }
 
 .preloader-welcome img {
-  opacity: 0.8;
+  opacity: 0.9;
   width: 34vw;
   height: 59vh;
 }
