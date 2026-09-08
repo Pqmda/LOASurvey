@@ -1,6 +1,6 @@
 # 📋 LOASurvey
 
-A lightweight, responsive web application built to streamline survey collection, request processing, and workflow data gathering for LOA (Letter of Authorization / Leave of Absence) processes. 
+A lightweight, responsive web application built to streamline survey collection, request processing, and workflow data gathering for LOA (Lyceum of Alabang) processes. 
 
 Designed with modern frontend principles, real-time input handling, and seamless API integration in mind.
 
