@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
+  <input type="checkbox" id="sidebarCollapseToggle" class="sidebar-collapse-toggle">
+
   <nav class="navbar">
     <div class="nav-container">
       <div class="logo">
@@ -23,6 +25,12 @@
 
   <div class="main-container">
     <aside class="sidebar">
+      <div class="sidebar-top-row">
+        <label for="sidebarCollapseToggle" class="sidebar-collapse-label" aria-label="Toggle sidebar" title="Collapse sidebar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </label>
+      </div>
+
       <div class="sidebar-section">
         <h3>Your Role</h3>
         <div class="role-display" id="roleDisplay">Guest</div>
